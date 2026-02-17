@@ -190,10 +190,9 @@
 	/////////////////////////////////////////////////////////////////////
 	uint64_t renamer::get_branch_mask(){
 		print("enter get branch mask function \n");
-		uint64_t branch_mask = GBM;
-		print("get branch mask function :: branch mask = " << branch_mask << "\n");
+		print("get branch mask function :: branch mask = " << GBM << "\n");
 		print("exit get branch mask function \n");
-		return branch_mask;
+		return GBM;
 		
 	}
 
@@ -271,17 +270,16 @@
 	// 3. checkpointed GBM
 	/////////////////////////////////////////////////////////////////////
 	uint64_t renamer::checkpoint(){
-		  print("check_point function :: checkpointing a new branch\n");
-		// uint64_t branch_id = get_branch_id();
-		// print("check_point function :: branch id = " << branch_id << "\n");
-		// gbm_mask.at(branch_id).shadow_table = rename_map_table;
-		// gbm_mask.at(branch_id).fl_head = free_list.head;
-		// gbm_mask.at(branch_id).fl_head_phase = free_list.head_phase;
-		// gbm_mask.at(branch_id).gbm_snapshot = GBM;
-		// write_gbm(branch_id);
+		print("check_point function :: checkpointing a new branch\n");
+		uint64_t branch_id = get_branch_id();
+		print("check_point function :: branch id = " << branch_id << "\n");
+		gbm_mask.at(branch_id).shadow_table = rename_map_table;
+		gbm_mask.at(branch_id).fl_head = free_list.head;
+		gbm_mask.at(branch_id).fl_head_phase = free_list.head_phase;
+		gbm_mask.at(branch_id).gbm_snapshot = GBM;
+		write_gbm(branch_id);
 		print("exit check_point function \n");
-		return 0;
-		// return branch_id;
+		return branch_id;
 	}
 
 	//////////////////////////////////////////
@@ -523,40 +521,41 @@
 	void renamer::resolve(uint64_t AL_index,
 		     uint64_t branch_ID,
 		     bool correct){
-					 print("enter resolve function \n");
-				// if (correct){
-				// 	print("resolve function :: branch was predicted correct" << "\n");
-				// 	clear_gbm(branch_ID);
+				
+				 print("enter resolve function \n");
+				 if (correct){
+					print("resolve function :: branch was predicted correct" << "\n");
+					clear_gbm(branch_ID);
 
-				// 	for (uint64_t i=0; i < this->n_branches; i++)
-				// 	{
-				// 		gbm_mask.at(i).gbm_snapshot = (gbm_mask.at(i).gbm_snapshot & ~(1ULL << branch_ID));
-				// 	}
+					for (uint64_t i=0; i < this->n_branches; i++)
+					{
+						gbm_mask.at(i).gbm_snapshot = (gbm_mask.at(i).gbm_snapshot & ~(1ULL << branch_ID));
+					}
 					
 
-				// }
-				// else{
-				// 	print("resolve function :: branch was predicted *incorrect*\n");
-				// 	GBM = (gbm_mask.at(branch_ID).gbm_snapshot & ~(1ULL << branch_ID));
-				// 	assert(!(GBM & (1ULL << branch_ID)));
+				}
+				else{
+					print("resolve function :: branch was predicted *incorrect*\n");
+					GBM = (gbm_mask.at(branch_ID).gbm_snapshot & ~(1ULL << branch_ID));
+					assert(!(GBM & (1ULL << branch_ID)));
 
-				// 	rename_map_table = gbm_mask.at(branch_ID).shadow_table;
-				// 	free_list.head = gbm_mask.at(branch_ID).fl_head;
-				// 	free_list.head_phase = gbm_mask.at(branch_ID).fl_head_phase;
+					rename_map_table = gbm_mask.at(branch_ID).shadow_table;
+					free_list.head = gbm_mask.at(branch_ID).fl_head;
+					free_list.head_phase = gbm_mask.at(branch_ID).fl_head_phase;
 
-				// 	al_tail= (AL_index + 1) % n_active;
+					al_tail= (AL_index + 1) % n_active;
 					
-				// 	if (al_head == al_tail  || al_tail < al_head)
-				// 	{
-				// 		print("resolve function :: active list tail phase updated to be different from active list head phase\n");
-				// 		al_tail_phase = !al_head_phase;
-				// 	} 
-				// 	else {
-				// 		assert(!(al_head >= al_tail));
-				// 		print("resolve function :: active list tail phase updated to be same as active list head phase\n");
-				// 		al_tail_phase = al_head_phase;
-				// 	}
-				// }
+					if (al_head == al_tail  || al_tail < al_head)
+					{
+						print("resolve function :: active list tail phase updated to be different from active list head phase\n");
+						al_tail_phase = !al_head_phase;
+					} 
+					else {
+						assert(!(al_head >= al_tail));
+						print("resolve function :: active list tail phase updated to be same as active list head phase\n");
+						al_tail_phase = al_head_phase;
+					}
+				}
 				//end of outside if else statement
 				print("exit resolve function \n");
 			 }
@@ -654,8 +653,8 @@
 					amo = active_list.at(al_head).is_amo;
 					csr = active_list.at(al_head).is_csr;
 					PC = active_list.at(al_head).PC;
-					//  std::cout << "precommit function :: active list is not empty so return true\n";
-					//  std::cout << "exit precommit function \n";
+					 print("precommit function :: active list is not empty so return true\n");
+					 print("exit precommit function \n");
 				    return true;
 
 			}
