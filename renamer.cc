@@ -1,5 +1,5 @@
 #include "renamer.h"
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #define print(x) std::cout << x
